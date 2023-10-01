@@ -28,7 +28,8 @@ out/
 
 
 !src/
-
+application.properties
+src/generated/
 
 .DS_Store
 
