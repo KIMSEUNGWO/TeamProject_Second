@@ -58,8 +58,15 @@
 
 ### 4.2. 사용자 요청
 
+-   사용자 신청
 ![주문](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/cda2f4a2-dbf5-4b79-b5bd-c7920d4644a5)
 ![주문2](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/12073fc1-a4a1-454f-a012-2337fa782dc0)
+-   주문내역 확인, 배달원 수거
+![픽업](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/dfff4380-0369-4d3d-b8bb-ae628b177f23)
+-   관리자 세탁물 검수 과정
+![검수](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/ed852666-b51a-4d13-b774-25d3545ad6b6)
+-   세탁 후 사용자에게 배송
+![배송](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/d885129e-9f68-4689-bcb0-ef40add82cf8)
 </details>
 </br>
 
