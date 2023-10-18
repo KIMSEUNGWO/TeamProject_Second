@@ -31,7 +31,8 @@
 
 ## 3. ERD 설계
 
-![](https://private-user-images.githubusercontent.com/140701897/270906158-458434d6-77a5-433f-9278-095c5f6ccc52.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE2OTU4MDE4ODcsIm5iZiI6MTY5NTgwMTU4NywicGF0aCI6Ii8xNDA3MDE4OTcvMjcwOTA2MTU4LTQ1ODQzNGQ2LTc3YTUtNDMzZi05Mjc4LTA5NWM1ZjZjY2M1Mi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBSVdOSllBWDRDU1ZFSDUzQSUyRjIwMjMwOTI3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDIzMDkyN1QwNzU5NDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xOWMxZDA4NGI1OGZiZmUyZGRiN2RlYzQzMDlmYzJjYmI4Y2UwN2FjNDc4MzdiNmE2MTIyZDNhN2RlYWQ3MzA3JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.c8m8Or9RPKdmQ1Ti0ApOD72CUEou9nSb3NdHmIeC5DI)
+![ERD](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/3dac4ee1-a7b8-4032-af05-29147616aade)
+
 
 ## 4. 핵심 기능
 
@@ -107,184 +108,169 @@
 
 ## 5. 핵심 트러블 슈팅
 
-### 5.1. 자동 로그인을 위한 인터셉터 구현
+### 5.1. 카테고리 관리의 문제
 
--   이 서비스는 모바일 앱 기반으로 만들어졌습니다. 모바일 앱은 한 번 로그인하면 서비스를 종료해도 일정 기간동안 로그인 상태가 유지됩니다. 그래서 저도 이 자동로그인을 구현해보고 싶었습니다.
+-   기존 카테고리는 Table을 만들어 DB에서 관리해왔습니다. 세탁 플랫폼인만큼 한명이 주문완료까지 카테고리 호출횟수는 3번, 검증을 위한 호출과 검수자의 카테고리 사용빈도를 종합적으로 확인했을 때 생각보다 많은 비용을 사용하고 있어 개선이 필요하다고 생각했습니다.
 
--   이 과정에서 쿠키와 세션에 대한 이해가 필요했고 인터셉터에 걸리는 경로를 신중하게 설정해야 하는 어려움이 있었습니다.
-
--   자동로그인 구현: User가 로그인 한 경우 세션에 memberId를 저장함과 동시에 쿠키(loginCookie)도 생성하여 세션의 ID를 저장합니다. 그리고 이 세션의 ID값과 쿠키 유효시간을 DB에 저장합니다. 그 후 사용자가 서비스를 종료 후 다시 돌아오면 세션은 만료되고 쿠키는 아직 남아있으면 쿠키에 등록된 새션의 ID를 이용하여 memberId를 가져와 세션에 저장하여 로그인 상태를 유지하도록 합니다.(**기존코드** 참고)
+-   카테고리는 수정, 추가가 자주 이루어지지않기 때문에 enum을 사용하기로 결정하였고, 그 결과 속도향상과 유지관리가 간편해졌습니다.
+-   추가적으로 멤버쉽에 가입한 고객에게 기존 가격의 15% 기능이 존재했었는데 enum을 사용하면서 Function<T, T> 를 사용하여 카테고리별 할인금액을 일괄적으로 관리할 수 있게되었습니다.
 
 <details>
-<summary><b>기존 코드</b></summary>
+<summary><b>enum 코드</b></summary>
 <div markdown="1">
 
-`loginController.java`
+`aug/laundry/enums/category/Category.java`
 
 ```java
-session.setAttribute(SessionConstant.LOGIN_MEMBER, userDto.getMemberId());
-Cookie cookie = new Cookie("loginCookie", session.getId());
-cookie.setPath("/");
-int amount = 60 * 60 * 24 * 7;
-// 단위는 (초)임으로 7일정도로 유효시간을 설정해 준다.
-cookie.setMaxAge(amount);
-// 쿠키를 적용해 준다.
-response.addCookie(cookie);
-Date limit = new Date(System.currentTimeMillis() + (1000*amount));
-// 현재 세션 id와 유효시간을 사용자 테이블에 저장한다.
-service.keepLogin(session.getId(), limit, userDto.getMemberId());
+public enum Category {
 
-```
+        COMMON("일반", null, null),
+            BASIC("생활빨래", 4000L, COMMON),
+            ADDITIONAL("생활빨래 20L 초과시 10L 당", 3800L, COMMON),
 
-`WebConfig.java`
+        CLOTHES("의류", null, null),
+            Y_SHIRT("와이셔츠", 2100L, CLOTHES),
+            SCHOOL_UNIFORM_SHIRT("교복셔츠", 2100L, CLOTHES),
+            SCHOOL_UNIFORM_JACKET("교복자켓", 5000L, CLOTHES),
+            REGULAR_SHIRT("일반셔츠", 2100L, CLOTHES),
+            BLOUSE("블라우스", 4200L, CLOTHES),
+            T_SHIRT("티셔츠", 4200L, CLOTHES),
+            SWEAT_SHIRT("맨투맨", 4200L, CLOTHES),
+            HOODIE("후드티", 4800L, CLOTHES),
+            KNITWEAR("니트", 5500L, CLOTHES),
+            SWEATER("스웨터", 5500L, CLOTHES),
+            CARDIGAN("가디건", 5500L, CLOTHES),
+            PANTS("바지", 4800L, CLOTHES),
+            SKIRT("스커트", 4800L, CLOTHES),
+            ONEPIECE("원피스", 6800L, CLOTHES),
+            JUMPSUIT("점프수트", 6800L, CLOTHES),
+            ARTIFICIAL_SKIN("인조가죽하의", 11000L, CLOTHES),
+            VEST("조끼", 3000L, CLOTHES),
+            PADDED_VEST("패딩조끼", 8000L, CLOTHES),
+            SKI_BOARD_PANTS("스키,보드 바지", 24800L, CLOTHES),
+            SKI_BOARD_JUMP_SUIT("스키, 보드 점스수트", 46800L, CLOTHES),
+            SKI_BOARD_JACKET("스키, 보드 자켓", 37000L, CLOTHES),
+            PADDED_PANTS("패딩바지", 11000L, CLOTHES),
+            SUIT_JACKET("정장자켓", 5000L, CLOTHES),
+            JACKET("자켓", 8000L, CLOTHES),
+            JUMPER("점퍼", 8000L, CLOTHES),
+            COAT("코트", 14000L, CLOTHES),
+            TRENCH_COAT("트렌치 코드", 14000L, CLOTHES),
+            LIGHTWEIGHT_PADDING("경량패딩", 9000L, CLOTHES),
+            PADDING("일반패딩", 16800L, CLOTHES),
+            DOWN_PADDING("다운패딩", 16800L, CLOTHES),
+            ARTIFICIAL_LEATHER_JACKET("인조가죽자켓", 15000L, CLOTHES),
+            TIE("넥타이", 2500L, CLOTHES),
+            MUFFLER("목도리", 4000L, CLOTHES),
+            SCARF("스카프", 4000L, CLOTHES),
+            GLOVES("장갑", 4000L, CLOTHES),
+            KNIT_CAP("니트모자", 4000L, CLOTHES),
+            CAP_HAT("캡모자", 6000L, CLOTHES),
 
-```java
-registry.addInterceptor(new LoginCheckInterceptor(loginService))
-.order(1)
-.addPathPatterns("/laundry/**")
-.excludePathPatterns("/css/**", "/images/**", "/js/**", "/font/**", "/","/members//**",
-"/login/**", "/price/**", "/subscription/**","/register", "/check/**");
-```
+        BEDDING("침구류", null, null),
+            REGULAR_BLANKET("일반이불", 12000L, BEDDING),
+            MICROFIBER_BLANKET("극세사이불", 16000L, BEDDING),
+            DOWNFER_BLANKET("다운퍼이불 (오리, 거위털)", 22000L, BEDDING),
+            WOOL_BLANKET("양모이불", 23000L, BEDDING),
+            SILK_QUIT_OF_SILK("실크이불", 25000L, BEDDING),
+            BLANKET_PAD("이불패드", 10000L, BEDDING),
+            BLANKET_COVER("이불커버", 10000L, BEDDING),
+            SINGLE_BLANKET("홑이불", 10000L, BEDDING),
+            REGULAR_TOPPER("일반토퍼", 18000L, BEDDING),
+            GOOSE_TOPPER("구스토퍼", 25000L, BEDDING),
+            PILLOW_COVER("베개커버", 3500L, BEDDING),
+            PILLOW_COTTON("베개(솜)", 10000L, BEDDING),
+            PILLOW_DOWNFER("베개(다운퍼)", 12000L, BEDDING),
+        SHOES("신발", null, null),
+            SNEAKERS("운동화", 6000L, SHOES),
+            SHOESS("구두", 7000L, SHOES),
+            LOAFERS("로퍼", 7000L, SHOES),
+            SPORTS_SHOES("스포츠화", 9000L, SHOES),
+            WALKER("워커", 11000L, SHOES),
+            BOOTS("부츠", 15000L, SHOES),
+            UGG_BOOTS("어그부츠", 20000L, SHOES);
 
-`LoginCheckInterceptor.java`
 
-```java
-@Override
-public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-    String requestURI = request.getRequestURI();
-    log.info("인증 체크 인터셉터 실행 {}", requestURI);
-    HttpSession session = request.getSession(true);
+    private final String title;
+    private final Long price;
+    private final Category parentCategory;
+    private final Map<String, Long> childCategories = new ConcurrentHashMap<>();
 
-    // 세션이 없거나 세션에 저장된 memberId가 없는 경우
-    if (session == null || session.getAttribute(SessionConstant.LOGIN_MEMBER) == null) {
-    // 웹에 있는 쿠키를 가져온다.
-    Cookie loginCookie = WebUtils.getCookie(request,"loginCookie");
-
-    // loginCookie가 있는 경우 쿠키에 저장된 세션ID값을 이용해 memberId를 가져와 세션에 저장
-    if(loginCookie != null){
-        String sessionId = loginCookie.getValue();
-        MemberDto memberDto = loginService.checkUserWithSessionId(sessionId);
-        if(memberDto != null){
-            session.setAttribute(SessionConstant.LOGIN_MEMBER, memberDto.getMemberId());
-            return true;
+    Category(String title, Long price, Category parentCategory) {
+        this.title = title;
+        this.price = price;
+        this.parentCategory = parentCategory;
+        // parentCategory가 null이 아니라면
+        if (Objects.nonNull(parentCategory)) {
+            parentCategory.childCategories.put(this.title, Objects.isNull(this.price) ? 0L : this.price);
         }
-    }else{
-        log.info("인증되지않은 사용자 요청");
-        response.sendRedirect("/login?redirectURL=" + requestURI);
-        return false;
-        }
+
     }
-    log.info("인증된 사용자");
-    return true;
-}
-```
 
-</div>
-</details>
-
--   **문제1**: 사용자가 임의로 세션을 지우고 '마이페이지'나 '주문내역'에 들어갈 경우 쿠키가 있음에도 세션이 생성되지 않았습니다.
--   그 이유는 '주문내역'에 접속하려면 세션에 있는 memberId가 필요한데 세션을 지웠기 때문에 오류가 발생하고 '마이페이지'의 접속은 매핑된 주소에 memberId가 포함되어 있어 memberId가 존재하지 않아 컨트롤러에 접근이 되지 않아 404 오류가 발생하게 되는 문제가 발생하였습니다.
--   **문제2**: 쿠키, 세션 모두 존재하지 않은 상태에서 '마이페이지'에 접속하는 경우 '로그인 페이지'로 이동하고 마이페이지의 redirect 경로도 전달됩니다. 이 때 로그인 하는 경우 redirect 경로가 올바르지 않아 오류가 발생하게 됩니다.
--   그래서 아래 **개선된 코드1**와 같이 필터를 활용해서 컨트롤러에 진입하기 전에 memberId가 저장된 세션을 생성하도록 유도했습니다.
-<details>
-<summary><b>개선된 코드1</b></summary>
-<div markdown="1">
-
-```java
-@Override
-public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-    HttpServletRequest req = (HttpServletRequest) request;
-    Cookie loginCookie = WebUtils.getCookie(req,"loginCookie");
-    if(loginCookie != null){
-        HttpSession session = req.getSession();
-        String sessionId = loginCookie.getValue();
-        MemberDto memberDto = loginService.checkUserWithSessionId(sessionId);
-        if(memberDto != null){
-            session.setAttribute(SessionConstant.LOGIN_MEMBER, memberDto.getMemberId());
-        }else{
-            return;
-        }
+    // 상위 카테고리 이름 가져오기
+    public Category getParentCategory() {
+        return parentCategory;
     }
-    chain.doFilter(request, response);
+
+    // 하위 카테고리 리스트 가져오기
+    public Map<String, Long> getChildCategories() {
+        return Collections.unmodifiableMap(childCategories);
+    }
+
+    // 전체 하위카테고리 가져오기
+    public static Map<String, Long> getAll() {
+        return Arrays.stream(Category.values()).filter(x -> Objects.nonNull(x.parentCategory)).collect(Collectors.toMap(y -> y.title, y -> y.price));
+    }
+
+    // 상위 카테고리 전체 가져오기
+    public static Set<Category> getParentCategoryAll() {
+        return Arrays.stream(Category.values()).filter(x -> Objects.isNull(x.getPrice()) && x != Category.COMMON).collect(Collectors.toSet());
+    }
+
+    // 카테고리 Title로 카테고리 가져오기
+    public static Optional<Category> findByTitle(String title) {
+        return Arrays.stream(Category.values()).filter(x -> x.getTitle().equals(title)).findAny();
+    }
+
 }
+
+
 ```
 
 </div>
 </details>
-
--   **개선된 코드1**을 추가함으로써 **문제1**을 해결했지만 **문제2**는 여전히 해결되지 않았습니다.
--   '마이페이지'의 접속은 footer에서 마이페이지를 클릭하여 이루어지고, **개선된 코드2**를 보시면 thymeleaf를 이용해서 세션이 없으면 로그인 페이지로 이동하도록 했습니다.
--   또한 인터셉터가 발동되어야 하는 경로와 발동되면 안되는 경로를 더욱 구체화 시켰습니다.
 
 <details>
-<summary><b>개선된 코드2</b></summary> 
+<summary><b>Function 기능</b></summary>
 <div markdown="1">
 
-`project_footer.html` :pushpin: [코드확인](https://github.com/geonwoo05/laundry_project/blob/develop/src/main/resources/templates/common/project_footer.html#L29)
-
-```html
-<th:block th:if="${session.memberId != null}">
-    <a th:href="@{/members/{memberId}/mypage(memberId=${session.memberId})}">
-        <button type="button" class="mypage">
-            <!-- 선택된 버튼 -->
-            <svg xmlns="http://www.w3.org/2000/svg" th:if="${footer == 'mypage'}" viewBox="0 0 448 512">
-                <path
-                    id="mypageButton1"
-                    d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
-                />
-            </svg>
-            <!-- 선택되지 않은 버튼 -->
-            <svg xmlns="http://www.w3.org/2000/svg" th:if="${footer != 'mypage'}" viewBox="0 0 448 512">
-                <path
-                    id="mypageButton2"
-                    d="M336 128a112 112 0 1 0 -224 0 112 112 0 1 0 224 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM16 482.3c0 7.6 6.1 13.7 13.7 13.7H418.3c7.6 0 13.7-6.1 13.7-13.7C432 392.7 359.3 320 269.7 320H178.3C88.7 320 16 392.7 16 482.3zm-16 0C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"
-                />
-            </svg>
-            <span>마이페이지</span>
-        </button>
-    </a>
-</th:block>
-<th:block th:if="${session.memberId == null}">
-    <a th:href="@{/login}">
-        <button type="button" class="mypage">
-            <!-- 선택된 버튼 -->
-            <svg xmlns="http://www.w3.org/2000/svg" th:if="${footer == 'mypage'}" viewBox="0 0 448 512">
-                <path
-                    id="mypageButton1"
-                    d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
-                />
-            </svg>
-            <!-- 선택되지 않은 버튼 -->
-            <svg xmlns="http://www.w3.org/2000/svg" th:if="${footer != 'mypage'}" viewBox="0 0 448 512">
-                <path
-                    id="mypageButton2"
-                    d="M336 128a112 112 0 1 0 -224 0 112 112 0 1 0 224 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM16 482.3c0 7.6 6.1 13.7 13.7 13.7H418.3c7.6 0 13.7-6.1 13.7-13.7C432 392.7 359.3 320 269.7 320H178.3C88.7 320 16 392.7 16 482.3zm-16 0C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"
-                />
-            </svg>
-            <span>마이페이지</span>
-        </button>
-    </a>
-</th:block>
-```
-
-<br/>
-
-`WebConfig.java`
+`aug/laundry/enums/category/CategoryPriceCalculator.java`
 
 ```java
-@Override
-public void addInterceptors(InterceptorRegistry registry) {
-    // 로그인 체크 인터셉터
-    registry.addInterceptor(new LoginCheckInterceptor(loginService))
-                .order(1)
-                .addPathPatterns("/laundry/**", "/orders/**", "/members/**")
-                .excludePathPatterns("/css/**", "/images/**", "/js/**", "/", "/font/**", "/members//**","/orders/*/payment/webhook");
+public enum CategoryPriceCalculator {
+    COMMON(value -> value),
+    PASS(value -> Math.round((Long)value * 0.85));
 
+    private Function<Long, Long> expression;
+
+    CategoryPriceCalculator(Function expression) {
+        this.expression = expression;
+    }
+
+    protected Long calculate(Long value) {
+        return this.expression.apply(value);
+    }
+
+    public Float percent() {
+        return this.expression.apply(100L) / 100.0f;
+    }
 }
+
 ```
 
 </div>
 </details>
+
 
 </br>
 
