@@ -11,19 +11,15 @@
 
 #### `Back-end`
 
--   Java 11
+-   Java 11 / Gradle
+-   Oracle 11g
+-   Apache Tomcat 9.0.78
 -   Spring Boot 2.7.14
--   Gradle
--   Tymeleaf 3.1.2
 -   MyBatis 2.3.1
--   DB : Oracle 11g
--   Server : Apache Tomcat 9.0.78
--   Framework/Flatform : Spring Boot, SpringSecurity, MyBatis, Bootstrap, jQuery, Docker 2.3.0.3
-  - Server : Apache Tomcat 8.5
-- DB : Oracle11g R2 (RDB)
-
-- Language : JAVA, Javascript, HTML5, CSS3
-- Tool : Eclipse, GitHub, Git(SourceTree), SQL Developer
+-   jQuery 3.7.1
+-   Thymeleaf 3.1.2
+-   IntelliJ 2023.2.1
+-   Git, Github
 
 #### `Front-end`
 
