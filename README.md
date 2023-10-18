@@ -34,11 +34,19 @@
 ![ERD](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/3dac4ee1-a7b8-4032-af05-29147616aade)
 
 
-## 4. 기능
+## 4. 기능 및 역할
 
 이 서비스의 핵심 기능은 컨텐츠 등록 기능입니다.  
 사용자는 단지 컨텐츠의 카테고리를 선택하고, URL만 입력하면 끝입니다.  
 이 단순한 기능의 흐름을 보면, 서비스가 어떻게 동작하는지 알 수 있습니다.
+
+### 나의 역할
+-   메인화면 구현 `Controller : aug/laundry/controller/MainController.java`
+-   세탁신청 ~ 주문완료 기능구현 `Controller : aug/laundry/controller/laundry/`
+-   공통 Aspect 구현 `Aspect : aug/laundry/aspects/FooterAspect.java`
+-   Category enum 구현 `Enum : aug/laundry/enums/category/Category.java`
+-   HTML, CSS 80% 제작 `HTML : /templates/, CSS : /static/css/`
+-   Android 앱 구현(JAVA)
 
 <details>
 <summary><b>기능 설명 펼치기</b></summary>
@@ -48,20 +56,11 @@
 
 ![세탁소URL](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/fcd46ce9-dffa-4e74-b9fe-949bb484c725)
 
-### 4.2. 나의 역할
--   메인화면 구현
--   세탁신청 ~ 주문완료 기능구현
--   공통 Aspect 구현
--   Category enum 구현
--   Android 앱 구현(JAVA)
--   HTML, CSS 80% 제작 
-
-
-### 4.3. 사용자 요청
+### 4.2. 사용자 요청
 -    **주문기능**
 ![주문](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/cda2f4a2-dbf5-4b79-b5bd-c7920d4644a5)
 ![주문2](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/12073fc1-a4a1-454f-a012-2337fa782dc0)
-
+    -    
 
 -   **URL 정규식 체크** :pushpin: [코드 확인](https://github.com/Integerous/goQuality/blob/b587bbff4dce02e3bec4f4787151a9b6fa326319/frontend/src/components/PostInput.vue#L67)
 
