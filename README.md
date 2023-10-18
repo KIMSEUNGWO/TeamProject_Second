@@ -271,6 +271,38 @@ public enum CategoryPriceCalculator {
 </div>
 </details>
 
+### 5.2. 페이지 위치에 따른 footer 변화
+
+-   페이지 위치에 따라 footer의 아이콘의 상태가 변경되는것을 구현하는데 그 목록에는 메인, 주문내역, 마이페이지가 있습니다.
+-   기존에는 페이지마다 footer의 상태를 Model에 넣어반환하였으나 페이지가 계속 추가되면서 유지보수가 불가능하다는 느낌이 들었고, 이 부분을 개선하기 위해 Aspect를 도입했습니다.
+-   AOP를 도입하면서 Aspect의 Class가 각 Controller에 의존하게되지만 기존에 사용했던 불필요한 코드들이 한번에 제거되었습니다.
+
+<details>
+<summary><b>Aspect 코드</b></summary>
+<div markdown="1">
+
+`aug/laundry/aspects/FooterAspect.java 의 일부`
+
+```java
+    @Before("execution(* aug.laundry.controller.MainController.*(..))")
+    public void mainpageAspect(JoinPoint joinPoint) {
+        log.info("MainPageController Aspect Before 실행 : {}", joinPoint.getSignature().getName());
+
+        Object[] args = joinPoint.getArgs();
+        for (Object arg : args) {
+            if (arg instanceof Model) {
+                ((Model) arg).addAttribute("footer", "main");
+                return;
+            }
+
+        }
+    }
+
+```
+
+</div>
+</details>
+
 
 </br>
 
