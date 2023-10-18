@@ -297,9 +297,8 @@ public enum CategoryPriceCalculator {
 
         }
     }
-
 ```
-
+<img width="426" alt="스크린샷 2023-10-18 15 38 57" src="https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/d945ee7a-a7ac-4999-a222-bf95cb838a48">
 </div>
 </details>
 
