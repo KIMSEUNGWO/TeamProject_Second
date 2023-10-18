@@ -58,15 +58,30 @@
 
 ### 4.2. 사용자 요청
 
--   사용자 신청
+-   **사용자 신청**
 ![주문](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/cda2f4a2-dbf5-4b79-b5bd-c7920d4644a5)
 ![주문2](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/12073fc1-a4a1-454f-a012-2337fa782dc0)
--   주문내역 확인, 배달원 수거
+
+-   **주문내역 확인, 배달원 수거**
 ![픽업](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/dfff4380-0369-4d3d-b8bb-ae628b177f23)
--   관리자 세탁물 검수 과정
+
+-   **관리자 세탁물 검수 과정**
 ![검수](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/ed852666-b51a-4d13-b774-25d3545ad6b6)
--   세탁 후 사용자에게 배송
+
+-   **세탁 후 사용자에게 배송**
 ![배송](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/d885129e-9f68-4689-bcb0-ef40add82cf8)
+
+
+### 4.3. 그 외 기능
+-   **마이페이지 쿠폰, 포인트, 친구초대 기능 구현**
+![마이페이지1](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/849da23a-cc37-47e7-8c83-aaeca20fabf1)
+
+-   **주소,비밀번호 찾기, 새 비밀번호 발급, 탈퇴기능 구현**
+![마이페이지2](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/14445af9-e469-487f-8aef-1ef54fc2f6ff">)
+
+-   **구독 기능 구현**
+![구독](https://github.com/KIMSEUNGWO/TeamProject_Second/assets/128001994/59fff444-3f69-4f75-a7f7-86484c340d7b)
+
 </details>
 </br>
 
