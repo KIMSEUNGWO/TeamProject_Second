@@ -287,18 +287,39 @@ public void mainpageAspect(JoinPoint joinPoint) {
 ## 6. 그 외 트러블 슈팅
 
 <details>
-<summary>RequestBody를 생성할 때 JSON파라미터를 쿼리 문자열로 변경해야하는 문제</summary>
+<summary>AJAX 통신 시 MultipartFile 전송 실패</summary>
 <div markdown="1">
 
--   okHttp에서 제공하는 HttpUrl.Builder를 이용하여 URL의 쿼리 문자열을 반환하는 'encodeParameters'메서드를 만들어서 해결
+-   다수의 항목에 대한 다수의 Multipart 파일과 메세지 전송 시도 - 실패
+-   MultipartFile JSON 변환후 시도 - 실패
+-   RepairFormData ( List<MultipartFile>, String ) 객체 생성, Map<String, RepairFormData>를 FormData에 넣어서 전송 - 실패
+-   RepairFormData ( String, String ) 분리, List<MultipartFile> 로 나누어서 Controller에 전송 - 성공
 
 ```java
-public String encodeParameters(JSONObject params) {
-    HttpUrl.Builder urlBuilder = HttpUrl.parse(KAKAO_REDIRECT_URL).newBuilder();
-    for (String key : params.keySet()) {
-        urlBuilder.addQueryParameter(key, params.getString(key));
-    }
-    return urlBuilder.build().encodedQuery();
+@PostMapping(value = "/repair/order")
+public @ResponseBody Map<String, Boolean> repairOrder(@SessionAttribute(name = SessionConstant.LOGIN_MEMBER, required = false) Long memberId,
+                                                  @SessionAttribute(name = SessionConstant.ORDERS_CONFIRM, required = false) Long ordersDetailId,
+                                                  @RequestPart("repairData") Map<String, RepairFormData> repairData,
+                                                  @RequestParam(name = "files", required = false) List<MultipartFile> files) {
+Map<String, Boolean> resultMap = new ConcurrentHashMap<>();
+System.out.println("files = " + files);
+
+// memberId, ordersDetailId == null 일경우 false 반환
+boolean status = repairService.valid(memberId, ordersDetailId);
+if (!status){
+    resultMap.put("status", false);
+    return resultMap;
+}
+Repair saveRepair = repairService.insertRepair(ordersDetailId, repairData, files);
+
+if (saveRepair != null) {
+    int saveFile = fileUploadService.saveFile(files, saveRepair.getRepairId(), FileUploadType.REPAIR);
+    log.info("saveFile = {}", saveFile);
+}
+log.info("repairData = {}", repairData);
+log.info("files = {}", files);
+
+return resultMap;
 }
 
 ```
