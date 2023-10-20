@@ -292,8 +292,8 @@ public void mainpageAspect(JoinPoint joinPoint) {
 
 -   다수의 항목에 대한 다수의 Multipart 파일과 메세지 전송 시도 - 실패
 -   MultipartFile JSON 변환후 시도 - 실패
--   RepairFormData ( List<MultipartFile>, String ) 객체 생성, Map<String, RepairFormData>를 FormData에 넣어서 전송 - 실패
--   RepairFormData ( String, String ) 분리, List<MultipartFile> 로 나누어서 Controller에 전송 - 성공
+-   RepairFormData ( List<MultipartFile>, String, String ) 객체 생성, Map<String, RepairFormData>를 FormData에 넣어서 전송 - 실패
+-   RepairFormData ( String, String ) 분리, Map<String, RepairFormData>와 List<MultipartFile> 를 Controller에 항목개수만큼 전송 - 성공
 
 ```java
 @PostMapping(value = "/repair/order")
@@ -327,32 +327,17 @@ return resultMap;
 </div>
 </details>
 
-<details>
-<summary>카카오 로그인 시 사용자의 정보를 DTO에 담아야하는 문제</summary>
-<div markdown="1">
-
--   ObjectMapper 객체를 이용하여 JSON데이터를 java객체에 저장하면 된다.
--   DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES 설정은 JSON데이터에 java 클래스에 없는 속성이 있어도 예외를 던지지 않게 하는 설정이다.
-
-```java
-ObjectMapper obMapper = new ObjectMapper();
-obMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-KakaoProfile kakaoProfile = null;
-try {
-    kakaoProfile = obMapper.readValue(body.string(), KakaoProfile.class);
-}catch(JsonMappingException e){
-    e.printStackTrace();
-
-}catch (JsonProcessingException e){
-    e.printStackTrace();
-}
-```
-
-</div>
-</details>
-
 </br>
 
 ## 7. 회고 / 느낀점
 
->
+> 프로젝트를 들어가며
+<br>
+첫번째 프로젝트에 이어 두번째도 팀장을 맡게 되었습니다. 주제에 대한 고민을 하다가 세탁소와 사용자를 매칭 및 배달하는 중계플랫폼을 주제로 고민하다가 사용자와 회사를 직접 매칭하는 세탁플랫폼을 주제로 선정하게되었습니다.
+두번째 프로젝트의 규모가 클것이라고 예상했지만 그 예상보다 훨신 더 큰 프로젝트였습니다. 프로젝트를 한번밖에 안해본 저에겐 1달이 안되는 기간동안 마무리할 수 있을까 란 생각이 먼저 들었던것같습니다.
+하지만 그저 게시판정도를 만드는 프로젝트를 하고싶지는 않았습니다. 이제껏 배운걸 활용해서 만드는것도 중요하지만 안해본것을 스스로 공부해가며 활용해보는것이 더 중요하다고 생각했기 때문입니다.
+
+> 프로젝트 과정속에서
+<br>
+당초 계획한 7명 중 1명이 개인적인 사유로 더 이상 프로젝트에 참여하지 못하게되었습니다. 1차, 2차 프로젝트 모두 한명씩 빠지게 되어 많이 아쉬웠습니다. 빠진인원에 대한 역할도 제가 맡게 되어 아침부터 저녁 10시까지 거의 매일을 코딩했던것같습니다.
+
