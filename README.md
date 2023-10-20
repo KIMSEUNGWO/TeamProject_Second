@@ -371,12 +371,11 @@ return resultMap;
 
 2. MVC 패턴에 대한 고민
 
-   Controller - Service - Repository 로 나누어 방향성을 두고 웹개발을 하는건 어느정도 이해를 하고있는 상태에서 프로젝트를 진행을 하니 각 Controller가 페이지 역할을 하게되는 현상을 겪었습니다.
-
-   그러다보니 Service - Repository까지 페이지에 연관된 코드가 작성되면서 자연스럽게 재사용성이 매우 떨어지는것을 확인했습니다.
+   Controller - Service - Repository 에 방향성을 두고 웹 개발을 했지만 프로젝트를 진행하면서 아쉬운점이 있었습니다.
 
    
-
+   
+   
 4. DTO의 남발
 
 
