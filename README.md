@@ -36,13 +36,13 @@
 
 ## 4. 기능 및 역할
 
-이 서비스의 핵심 기능은 컨텐츠 등록 기능입니다.  
-사용자는 단지 컨텐츠의 카테고리를 선택하고, URL만 입력하면 끝입니다.  
-이 단순한 기능의 흐름을 보면, 서비스가 어떻게 동작하는지 알 수 있습니다.
+이 서비스는 주문파트 - 검수파트 - 배달파트로 나뉩니다.
+주문파트에서는 세탁종류와 요청사항을 받고, 검수파트에서는 세탁물에 대한 검수과정을 담당하고있습니다.
+배달파트는 지도 API를 활용하여 현재위치에서의 거리를 실시간으로 확인할 수 있고, 내비게이션 역할을 할 수 있습니다.
 
 ### 나의 역할
 -   메인화면 구현 `Controller : aug/laundry/controller/MainController.java` : [코드확인](https://github.com/KIMSEUNGWO/TeamProject_Second/blob/main/src/main/java/aug/laundry/controller/MainController.java)
--   세탁신청 ~ 주문완료 기능구현 `Controller : aug/laundry/controller/laundry/` : [코드확인](https://github.com/KIMSEUNGWO/TeamProject_Second/blob/main/src/main/java/aug/laundry/controller/laundry/)
+-   주문파트 기능구현 `Controller : aug/laundry/controller/laundry/` : [코드확인](https://github.com/KIMSEUNGWO/TeamProject_Second/blob/main/src/main/java/aug/laundry/controller/laundry/)
 -   공통 Aspect 구현 `Aspect : aug/laundry/aspects/FooterAspect.java` : [코드확인](https://github.com/KIMSEUNGWO/TeamProject_Second/blob/main/src/main/java/aug/laundry/aspects/FooterAspect.java)
 -   Category enum 구현 `Enum : aug/laundry/enums/category/Category.java`  : [코드확인](https://github.com/KIMSEUNGWO/TeamProject_Second/blob/main/src/main/java/aug/laundry/enums/category/Category.java)
 -   HTML, CSS 80% 제작 `HTML : /templates/, CSS : /static/css/` 
